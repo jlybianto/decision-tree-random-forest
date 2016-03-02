@@ -36,6 +36,7 @@ y = pd.read_csv("uci-har-dataset/train/y_train.txt", header=None, delim_whitespa
 
 col = [i.replace("()-", "") for i in features[1]] # Remove inclusion of "()-" in column names
 col = [i.replace(",", "") for i in col] # Remove inclusion of "," in column names
+col = [i.replace("()", "") for i in col] # Remove inclusion of "()" in column names
 col = [i.replace("Body", "") for i in col] # Drop "Body" and "Mag" from column names
 col = [i.replace("Mag", "") for i in col]
 col = [i.replace("mean", "Mean") for i in col] # Rename "Mean" and "Standard Deviation"
@@ -43,3 +44,8 @@ col = [i.replace("std", "STD") for i in col]
 
 x.columns = col
 y.columns = ["Activity"]
+# 1 = Walking, 2 = Walking Upstairs, 3 = Walking Downstairs, 4 = Sitting, 5 = Standing, 6 = Laying
+
+data = pd.merge(y, x, left_index=True, right_index=True)
+data = pd.merge(data, subjects, left_index=True, right_index=True)
+data["Activity"] = pd.Categorical(data["Activity"]).labels
