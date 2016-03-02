@@ -49,3 +49,22 @@ y.columns = ["Activity"]
 data = pd.merge(y, x, left_index=True, right_index=True)
 data = pd.merge(data, subjects, left_index=True, right_index=True)
 data["Activity"] = pd.Categorical(data["Activity"]).labels
+
+# ----------------
+# MODEL DATA
+# ----------------
+
+# Partitioning of aggregate data into training, testing and validation data sets
+train = data.query("Subject >= 27")
+test = data.query("Subject <= 6")
+valid = data.query("(Subject >= 21) & (Subject < 27)")
+
+train_target = train["Activity"]
+train_data = train.ix[:, 1:-2]
+rfc = RandomForestClassifier(n_estimators=500, oob_score=True)
+rfc.fit(train_data, train_target)
+
+rfc.oob_score_
+
+importance = rfc.feature_importances_
+rank = np.argsort(importance)[::-1]
